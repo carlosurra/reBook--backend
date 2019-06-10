@@ -26,7 +26,6 @@ function checkJwtToken(req, res, next) {
 
     req.claims = {
       uuid: decoded.uuid,
-      role: decoded.role,
     };
 
     return next();

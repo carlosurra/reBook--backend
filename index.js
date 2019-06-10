@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const express = require('express');
 const routes = require('./webserver/routes');
 const mysqlPool = require('./ddbb/mysql-pool');
@@ -39,9 +40,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', routers.accountRouter);
-app.use('/api', routers.postRouter);
-app.use('/api', routers.userRouter);
+app.use('/api', routes.accountRouter);
+app.use('/api', routes.userRouter);
 
 app.use((err, req, res, next) => {
     const { name: errorName } = err;  
@@ -62,13 +62,10 @@ async function init() {
         console.error(e);
         process.exit(1);
     }
-}
-
-    const port = proccess.env.PORT;
+    const port = process.env.PORT;
     app.listen(port, () => {
         console.log(`Server running and listening on port ${port}`);
         });
-
 }
 
 init();

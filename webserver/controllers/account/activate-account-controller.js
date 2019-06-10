@@ -1,8 +1,12 @@
 'use strict';
 
-const mysqlPool = require('../../../databases/mysql-pool');
+const mysqlPool = require('../../../ddbb/mysql-pool');
 
-async function activate(req, res, next) {
+/**
+ * activación de cuenta 
+ */
+
+async function activateAccount(req, res, next) {
   const { verification_code: verificationCode } = req.query;
 
   if (!verificationCode) {
@@ -14,7 +18,10 @@ async function activate(req, res, next) {
 
   const now = new Date();
   const sqlActivateQuery = `UPDATE users_activation
-SET verified_at = '${now.toISOString().substring(0, 19).replace('T', ' ')}'
+SET verified_at = '${now
+  .toISOString()
+  .substring(0, 19)
+  .replace('T', ' ')}'
 WHERE verification_code='${verificationCode}'
 AND verified_at IS NULL`;
 
@@ -23,33 +30,23 @@ AND verified_at IS NULL`;
     const result = await connection.query(sqlActivateQuery);
 
     if (result[0].affectedRows === 1) {
-      const sqlActivateUserQuery = `UPDATE users u
-      JOIN users_activation uv
-      ON u.uuid = uv.user_uuid
-      AND u.activated_at IS NULL
-      AND uv.verification_code = '${verificationCode}'
-      SET u.activated_at = uv.verified_at`;
+      const sqlActivateUserQuery = `UPDATE users
+      JOIN users_activation 
+      ON users.uuid = users_activation.uuid
+      AND users.activated_at IS NULL
+      AND users_activation.verification_code = '${verificationCode}'
+      SET users.activated_at = users_activation.activated_at`;
 
       const resultActivateUser = await connection.query(sqlActivateUserQuery);
       if (resultActivateUser[0].affectedRows === 1) {
         connection.release();
         return res.send('account activated');
-      }
-      /*
-      connection.query(sqlActivateUserQuery).then((resultActivateUSer) => {
-
-      }).catch((err) => {
-
-      });
-      */
+      }     
     }
-
-    // algo no fue ok
     connection.release();
     return res.send('verification code invalid');
   } catch (e) {
     return res.status(500).send(e.message);
   }
 }
-
-module.exports = activate;
+module.exports = activateAccount;

@@ -2,8 +2,8 @@
 
 const express = require('express');
 const activateAccount = require('../controllers/account/activate-account');
-const createAccountController = require('../controllers/create-account-controller');
-const login = require('../controllers/login-controller');
+const createAccountController = require('../controllers/account/create-account-controller');
+const login = require('../controllers/account/login-controller');
 
 const router = express.Router();
 

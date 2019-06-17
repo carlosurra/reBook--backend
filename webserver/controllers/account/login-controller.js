@@ -21,6 +21,7 @@ async function validateData(payload) {
 }
 
 async function login(req, res, next) {
+  console.log("Hello")
   /**
    * Validar datos de entrada con Joi
    */
@@ -73,7 +74,7 @@ async function login(req, res, next) {
       return res.status(200).json(response);
     }
 
-    return res.status(404).send();
+    return res.status(404).send("Wrong credentials");
   } catch (e) {
     return res.status(500).send(e.message);
   }

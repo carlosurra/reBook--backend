@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const activateAccount = require('../controllers/account/activate-account');
+const activateAccount = require('../controllers/account/activate-account-controller');
 const createAccountController = require('../controllers/account/create-account-controller');
 const login = require('../controllers/account/login-controller');
 

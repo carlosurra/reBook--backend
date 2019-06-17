@@ -2,8 +2,8 @@
 
 require('dotenv').config();
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const express = require('express');
+const cors = require('cors');
 const routes = require('./webserver/routes');
 const mysqlPool = require('./ddbb/mysql-pool');
 
@@ -31,17 +31,57 @@ app.use((err, req, res, next) => {
  * Enable CORS 
 
  */
-
+/*
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-    next();
-});
+    const accessControlAllowMethods = [
+      'GET',
+      'POST',
+      'DELETE',
+      'HEAD',
+      'PATCH',
+      'PUT',
+      'OPTIONS'
+    ];
+    
+    const accessControlAllowHeaders = [
+      'Origin',
+      'X-requested-With',
+      'Content-Type',
+      'Accept',
+      'Accept-Version',
+      'Location'
+    ];
 
-app.use('/api', routes.accountRouter);
-app.use('/api', routes.userRouter);
+    req.setHeader("Access-Control-Allow-Origin", "*");
+    req.header("Access-Control-Allow-Credentials", "true");
+    req.header(
+    "Access-Control-Allow-Methods",
+    accessControlAllowMethods.join(",")
+    );
+    req.header(
+    "Access-Control-Allow-Headers",
+    accessControlAllowHeaders.join(",")
+    );
+    req.header(
+    "Access-Control-Expose-Headers",
+    accessControlAllowHeaders.join(",")
+    );
+    next();
+  });
+
+
+    app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(400).send({
+    error: `Body parser: ${err.message}`
+    });
+  });
+*/
+app.use(cors())
+app.use("/api", routes.accountRouter);
+app.use("/api", routes.bookRouter);
+app.use("/api", routes.userRouter);
+
 
 app.use((err, req, res, next) => {
     const { name: errorName } = err;  

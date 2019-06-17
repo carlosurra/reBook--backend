@@ -31,14 +31,14 @@ async function validateSchema(payload) {
 }
 
 /**
- * creo perfil de usuario e inserto uuid y name en tabla user_profile
- * @param {String} uuid 
+ * creo perfil de usuario e inserto uuid y name en tabla users
+ * @param {number} uuid 
  * @return {String} name 
  */
   async function createUserProfile(uuid, name) {
     const name = name;
     const verificationCode = uuid;
-    const sqlQuery = `INSERT INTO user_profile SET ?`;
+    const sqlQuery = `INSERT INTO users SET ?`;
     const connection = await mysqlPool.getConnection();
     await connection.query(sqlQuery,{
       uuid: verificationCode,
@@ -65,7 +65,7 @@ async function addVerificationCode (uuid){
   const sqlQuery = 'INSERT INTO users_activation SET ?';
   const connection = await mysqlPool.getConnection();
   await connection.query(sqlQuery, {
-    user_uuid: uuid,
+    users_uuid:uuid,
     verification_code: verificationCode,
     created_at: createdAt,
   });
@@ -109,26 +109,19 @@ async function createAccount(req, res, next) {
 
   /**
    * inserto usuario en ddbb:
-   * 1.genero uuid v4
-   * 2.created_at
    * 3.hash de la password para almacenamiento seguro 
    */
 
     const now = new Date();
     const securePassword = await bcrypt.hash(accountData.password, 10);
     const uuid = uuidV4();
-    const createdAt = now
-    .toISOString()
-    .substring(0,19)
-    .replace('T','');
     const connection = await mysqlPool.getConnection();
     const sqlInsercion = `INSERT INTO users SET ?`;
     try {
-      const resultado = await connection.query(sqlInsercion, {
+      const result = await connection.query(sqlInsercion, {
         uuid: uuid,
         email: accountData.email,
         password: securePassword,
-        created_at: createdAt
       });
       connection.release();
       const verificationCode = await addVerificationCode(uuid);

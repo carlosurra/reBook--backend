@@ -21,7 +21,6 @@ async function validateData(payload) {
 }
 
 async function login(req, res, next) {
-  console.log("Hello")
   /**
    * Validar datos de entrada con Joi
    */
@@ -37,16 +36,21 @@ async function login(req, res, next) {
    */
   try {
     const connection = await mysqlPool.getConnection();
-    const sqlQuery = `SELECT
+    const sqlQuery = `SELECT *
     FROM users
     WHERE email = '${accountData.email}'`;
 
     const [result] = await connection.query(sqlQuery);
     if (result.length === 1) {
       const userData = result[0];
-      if (!userData.activated_at) {
+      /*const sqlQuery2 = `SELECT verified_at
+      FROM users_activation
+      WHERE users_uuid= '${userData.uuid}'`;
+      const [verified_at] = await connection.query(sqlQuery2);
+
+      if (!verified_at) {
         return res.status(403).send();
-      }
+      }*/
 
       /**
        * Paso3: La clave es valida?
@@ -65,9 +69,10 @@ async function login(req, res, next) {
       };
 
       const jwtTokenExpiration = parseInt(process.env.AUTH_ACCESS_TOKEN_TTL, 10);
-      const token = jwt.sign(payloadJwt, process.env.AUTH_JWT_PASS, { expiresIn: jwtTokenExpiration });
+      const token = jwt.sign(payloadJwt, process.env.AUTH_JWT_SECRET, { expiresIn: jwtTokenExpiration });
       const response = {
         accessToken: token,
+        uuid: userData.uuid,
         expiresIn: jwtTokenExpiration,
       };
 

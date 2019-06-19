@@ -32,17 +32,15 @@ async function validateSchema(payload) {
 
 /**
  * creo perfil de usuario e inserto uuid y name en tabla users
- * @param {number} uuid 
+ * @param {String} uuid 
  * @return {String} name 
  */
   async function createUserProfile(uuid, name) {
-    const name = name;
-    const verificationCode = uuid;
     const sqlQuery = `INSERT INTO users SET ?`;
     const connection = await mysqlPool.getConnection();
     await connection.query(sqlQuery,{
-      uuid: verificationCode,
-      name: name
+      name,
+      uuid,
     });
     connection.release();
     return name;
@@ -90,12 +88,10 @@ async function sendEmailRegistration(userEmail, verificationCode) {
       name: 'reBook',
     },
     subject: 'Welcome to reBook',
-    text: 'Where books take on a new life!',
-    html: `To confirm the account <a href="${linkActivacion}">activate it here</a>`,
+    html: `<p>Where books take on a new life!</p>
+    <p>To confirm the account <a href="${linkActivacion}">activate it here</a></p>`,
   };
-
   const data = await sendgridMail.send(msg);
-
   return data;
 }
 
@@ -112,13 +108,13 @@ async function createAccount(req, res, next) {
    * 3.hash de la password para almacenamiento seguro 
    */
 
-    const now = new Date();
     const securePassword = await bcrypt.hash(accountData.password, 10);
     const uuid = uuidV4();
     const connection = await mysqlPool.getConnection();
     const sqlInsercion = `INSERT INTO users SET ?`;
     try {
       const result = await connection.query(sqlInsercion, {
+        name: accountData.name,
         uuid: uuid,
         email: accountData.email,
         password: securePassword,
@@ -126,11 +122,10 @@ async function createAccount(req, res, next) {
       connection.release();
       const verificationCode = await addVerificationCode(uuid);
       await sendEmailRegistration(accountData.email, verificationCode);
-      await createUserProfile(uuid, accountData.name);
       return res.status(201).send();
       } catch (e) {
         if(connection){
-          connection.release();
+          connection.release(e);
         }
         return res.status(500).send(e.message);
       }

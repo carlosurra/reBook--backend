@@ -78,9 +78,9 @@ app.use((req, res, next) => {
   });
 */
 app.use(cors())
-app.use("/api", routes.accountRouter);
-app.use("/api", routes.bookRouter);
-app.use("/api", routes.userRouter);
+app.use("/", routes.accountRouter);
+app.use("/", routes.bookRouter);
+app.use("/", routes.userRouter);
 
 
 app.use((err, req, res, next) => {

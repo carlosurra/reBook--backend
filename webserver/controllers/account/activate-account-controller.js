@@ -30,18 +30,18 @@ AND verified_at IS NULL`;
     const result = await connection.query(sqlActivateQuery);
 
     if (result[0].affectedRows === 1) {
-      const sqlActivateUserQuery = `UPDATE users
+      /* const sqlActivateUserQuery = `UPDATE users
       JOIN users_activation 
-      ON users.uuid = users_activation.uuid
+      ON users.uuid = users_activation.user_uuid
       AND users.activated_at IS NULL
       AND users_activation.verification_code = '${verificationCode}'
       SET users.activated_at = users_activation.activated_at`;
 
       const resultActivateUser = await connection.query(sqlActivateUserQuery);
-      if (resultActivateUser[0].affectedRows === 1) {
+      if (resultActivateUser[0].affectedRows === 1) { */
         connection.release();
         return res.send('account activated');
-      }     
+          
     }
     connection.release();
     return res.send('verification code invalid');

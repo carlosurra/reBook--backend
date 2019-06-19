@@ -6,13 +6,13 @@ async function getLibrary(req, res) {
     const { uuid } = req.claims;
     const connection = await mysqlPool.getConnection();
     const sqlQuery = `SELECT 
+    name,
     title, 
-    owner_uuid, 
-    author_name, 
-    author_surname, 
-    created_at 
-    FROM books
-    WHERE uuid != '${uuid}'`;
+    users_uuid, 
+    author, 
+    description
+    FROM books inner JOIN users ON (books.users_uuid = users.uuid)
+    WHERE users_uuid = '${uuid}'`;
 
     try {
         const [ library ] = await connection.query(sqlQuery);

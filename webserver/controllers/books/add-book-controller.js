@@ -10,37 +10,34 @@ async function validateData(payload) {
         .min(2)
         .max(100)
         .required(),
-        author_name: Joi
+        author: Joi
         .string()
         .max(100)
         .required(),
-        author_surname: Joi
+        description: Joi
         .string()
-        .max(100)
-        .required(),
+        .min(2)
+        .max(300)
     };
     return Joi.validate(payload, schema);
 }
 
 async function addBook(req, res) {
     const bookData = req.body;
-
     try {
         await validateData(bookData);
     } catch (e) {
         return res.status(400).send(e);
     }
-
     const { uuid } = req.claims;
     const sqlQuery = `INSERT INTO books SET ?`;
-
+    const connection = await mysqlPool.getConnection();
     try {
         const result = await connection.query(sqlQuery, {
             title: bookData.title,
-            owner_uuid: uuid,
-            author_name: author_name,
-            author_surname: author_surname,
-            available
+            users_uuid: uuid,
+            author: bookData.author,
+            description: bookData.description,
         });
         connection.release();
         return res.status(201).send(result[0]);

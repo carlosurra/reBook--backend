@@ -38,6 +38,7 @@ async function addBook(req, res) {
             users_uuid: uuid,
             author: bookData.author,
             description: bookData.description,
+            cover: bookData.cover,
         });
         connection.release();
         return res.status(201).send(result[0]);

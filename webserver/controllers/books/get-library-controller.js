@@ -10,7 +10,8 @@ async function getLibrary(req, res) {
     title, 
     users_uuid, 
     author, 
-    description
+    description,
+    cover
     FROM books inner JOIN users ON (books.users_uuid = users.uuid)
     WHERE users_uuid = '${uuid}'`;
 

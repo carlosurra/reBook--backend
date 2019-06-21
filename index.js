@@ -16,68 +16,60 @@ process.on("uncaughtException", err => {
     console.error("unexpected error", err.message, err);  
   });
 
-const app = express();
-app.use(bodyParser.json());
-
-app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(400).send({
-        error: `Body parser: ${err.message}`,
-    });
-});
-
-/**
-
- * Enable CORS 
-
- */
-
-app.use((req, res, next) => {
-    const accessControlAllowMethods = [
-      'GET',
-      'POST',
-      'DELETE',
-      'HEAD',
-      'PATCH',
-      'PUT',
-      'OPTIONS'
-    ];
-    
-    const accessControlAllowHeaders = [
-      'Origin',
-      'X-requested-With',
-      'Content-Type',
-      'Accept',
-      'Accept-Version',
-      'Location'
-    ];
-
-    req.setHeader("Access-Control-Allow-Origin", "*");
-    req.header("Access-Control-Allow-Credentials", "true");
-    req.header(
-    "Access-Control-Allow-Methods",
-    accessControlAllowMethods.join(",")
-    );
-    req.header(
-    "Access-Control-Allow-Headers",
-    accessControlAllowHeaders.join(",")
-    );
-    req.header(
-    "Access-Control-Expose-Headers",
-    accessControlAllowHeaders.join(",")
-    );
-    next();
+  const app = express();
+  app.use(bodyParser.json());
+  
+  app.use((err, req, res, next) => {
+      console.error(err);
+      res.status(400).send({
+          error: `Body parser: ${err.message}`,
+      });
   });
-
-
-    app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(400).send({
-    error: `Body parser: ${err.message}`
+  
+  /**
+  
+   * Enable CORS
+  
+   */
+  
+  app.use((req, res, next) => {
+      const accessControlAllowMethods = [
+        'GET',
+        'POST',
+        'DELETE',
+        'HEAD',
+        'PATCH',
+        'PUT',
+        'OPTIONS'
+      ];
+  
+      const accessControlAllowHeaders = [
+        'Origin',
+        'X-requested-With',
+        'Content-Type',
+        'Accept',
+        'Accept-Version',
+        'Location'
+      ];
+  
+      req.setHeader("Access-Control-Allow-Origin", "*");
+      req.header("Access-Control-Allow-Credentials", "true");
+      req.header(
+      "Access-Control-Allow-Methods",
+      accessControlAllowMethods.join(",")
+      );
+      req.header(
+      "Access-Control-Allow-Headers",
+      accessControlAllowHeaders.join(",")
+      );
+      req.header(
+      "Access-Control-Expose-Headers",
+      accessControlAllowHeaders.join(",")
+      );
+      next();
     });
-  });
-
-app.use(cors())
+  
+  app.use(cors())
 app.use("/", routes.accountRouter);
 app.use("/", routes.bookRouter);
 app.use("/", routes.userRouter);

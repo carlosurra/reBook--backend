@@ -31,7 +31,7 @@ app.use((err, req, res, next) => {
  * Enable CORS 
 
  */
-/*
+
 app.use((req, res, next) => {
     const accessControlAllowMethods = [
       'GET',
@@ -76,7 +76,7 @@ app.use((req, res, next) => {
     error: `Body parser: ${err.message}`
     });
   });
-*/
+
 app.use(cors())
 app.use("/", routes.accountRouter);
 app.use("/", routes.bookRouter);

@@ -17,6 +17,7 @@ process.on("uncaughtException", err => {
   });
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use((err, req, res, next) => {
@@ -33,20 +34,7 @@ app.use((err, req, res, next) => {
  */
 
 
-    
-  
 
-   
-
-
-    app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(400).send({
-    error: `Body parser: ${err.message}`
-    });
-  });
-
-app.use(cors())
 app.use("/", routes.accountRouter);
 app.use("/", routes.bookRouter);
 app.use("/", routes.userRouter);

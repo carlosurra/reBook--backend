@@ -17,7 +17,9 @@ async function validateData(payload) {
         description: Joi
         .string()
         .min(2)
-        .max(300)
+        .max(300),
+        cover: Joi
+        .string()
     };
     return Joi.validate(payload, schema);
 }

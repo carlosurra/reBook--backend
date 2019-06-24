@@ -6,7 +6,7 @@ async function getUserProfile(req, res, next) {
   const { uuid } = req.claims;
 
   const connection = await mysqlPool.getConnection();
-  const sqlQuery = `SELECT user_profile.uuid, name FROM user_profile WHERE uuid = '${uuid}';`;
+  const sqlQuery = `SELECT users.uuid, avatar, name FROM users WHERE uuid = '${uuid}';`;
 
   try {
     const [userProfile] = await connection.query(sqlQuery);

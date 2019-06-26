@@ -6,6 +6,7 @@ async function getLibrary(req, res) {
     const { uuid } = req.claims;
     const connection = await mysqlPool.getConnection();
     const sqlQuery = `SELECT 
+    id,
     name,
     title, 
     users_uuid, 

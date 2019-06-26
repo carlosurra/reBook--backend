@@ -34,7 +34,6 @@ async function uploadCover(req, res, next) {
       secure_url: secureUrl,
     } = result;
     
-    // actualizar user con la url del avatar
     const sqlUpdate = `UPDATE books SET ? WHERE users_uuid = '${uuid}';`;
     const connection = await mysqlPool.getConnection();
         try {

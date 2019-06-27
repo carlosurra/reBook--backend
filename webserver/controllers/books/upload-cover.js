@@ -9,14 +9,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARI_API_SECRET,
 });
 
+
 async function uploadCover(req, res, next) {
   const { file } = req;
+  const { id } = req.body;
   const { uuid } = req.claims;
+  console.log({req})
 
-  if (!file || !file.buffer) {
+  if (!file || !file.buffer || !id || !uuid) {
     return res.status(400).send();
   }
-
+  
   cloudinary.v2.uploader.upload_stream({
     resource_type: 'raw',
     public_id: uuid,
@@ -28,25 +31,28 @@ async function uploadCover(req, res, next) {
     if (err) {
       return res.status(400).send(err);
     }
-
+    
     const {
       etag,
       secure_url: secureUrl,
     } = result;
     
-    const sqlUpdate = `UPDATE books SET ? WHERE users_uuid = '${uuid}';`;
+    const sqlUpdate = `UPDATE books SET ? WHERE id = '${id}';`;
     const connection = await mysqlPool.getConnection();
-        try {
-          const result = await connection.query(sqlUpdate, {
-            avatarUrl: secureUrl
-          });
-          connection.release();
-        } catch (e) {
-          return res.status(500).send(e.message);
-        }
-        res.header("Location", secureUrl);
-        res.status(201).send();
-      }
-    ).end(file.buffer);
+    try {
+      
+      const result = await connection.query(sqlUpdate, {
+        cover: secureUrl
+      });
+      connection.release();
+    } catch (e) {
+      return res.status(500).send(e.message);
+    }
+    res.header("Location", secureUrl);
+    res.header("Access-Control-Allow-Headers", "*");
+    
+    res.status(201).send();
+  }
+  ).end(file.buffer);
 }
 module.exports = uploadCover;
